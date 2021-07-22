@@ -10,50 +10,44 @@ export function Home() {
   //useEffect(() => { }, [result])
 
   function clickAccessToken() {
-    alert("Access Token");
     getAccessToken({ username: "admin", password: "admin" }).then(data => {
       console.log("Page Success: ", data);
       setToken("Access_Token", data.jwtToken);
-      setResultInDiv(data);
+      setResultInDiv(data, "Access Token:");
     }).catch(err => {
       console.log("Page Error: ", err);
-      setResultInDiv("Error Occured.");
+      setResultInDiv("Error Occured.", "Access Token:");
     });
   }
   function clickRefresh() {
-    alert("Refresh Token");
     getRefreshToken().then(data => {
       console.log("Page Success: ", data);
       setToken("Access_Token", data.jwtToken);
-      setResultInDiv(data);
+      setResultInDiv(data, "Refresh Token:");
     }).catch(err => {
       console.log("Page Error: ", err);
-      setResultInDiv("Error Occured.");
+      setResultInDiv("Error Occured.", "Refresh Token:");
     });
   }
   function clickAccessApplication() {
-    alert("Access Application");
     getResult().then(data => {
       console.log("Page Success: ", data);
-      setResultInDiv(data);
+      setResultInDiv(data, "Access Application:");
     }).catch(err => {
       console.log("Page Error: ", err);
-      setResultInDiv("Error Occured.");
+      setResultInDiv("Error Occured.", "Access Application:");
     });
   }
 
   function fnClearRefreshToken() {
-    alert("Revoke Refresh Token");
     revokeRefreshToken().then(data => {
       console.log("Page Success: ", data);
-      setResultInDiv(data);
+      setResultInDiv(data, "Revoke Token:");
     }).catch(err => {
       console.log("Page Error: ", err);
-      setResultInDiv("Error Occured.");
+      setResultInDiv("Error Occured.", "Revoke Token:");
     });
   }
-
-
   function fnSetAccessToken() {
     setToken("Access_Token", localToken);
     setResultInDiv("Access Token Creation Done.");
@@ -63,41 +57,27 @@ export function Home() {
     setResultInDiv("Access Token Clear Done.");
   }
   const onCodeChange = (e) => { setlocalToken(e.target.value); };
-  function setResultInDiv(obj) { setResult(JSON.stringify(obj)); }
+  function setResultInDiv(obj, msg) { setResult(msg + " " + JSON.stringify(obj)); }
   return (
-    <div style={{ width: "1000px" }}>
-      <div className="boxOuter" style={{ width: "300px", float: "left" }}>
-        <div style={{ padding: "5px", height: "50px" }}>
-          Accessing Tokens
-        </div>
-        <div style={{ padding: "5px" }}>
-          <button onClick={clickAccessToken}>Click Me to Generate Access Token</button>
-        </div>
-        <div style={{ padding: "5px" }}>
-          <button onClick={clickRefresh}>Click Me to Refresh the Access Token</button>
-        </div>
-        <div style={{ padding: "5px" }}>
-          <button onClick={clickAccessApplication}>Click Me to Access Application</button>
-        </div>
+    <div>
+      <div className="form-group">
+        <label for="exampleInputEmail1">Local Access Token</label>
+        <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter local token"></input>
       </div>
-      <div className="boxOuter" style={{ width: "700px", float: "right" }}>
-        <div style={{ padding: "5px", height: "50px" }}>
-          <input style={{ width: "100%" }} type="text" placeholder={"Local Token"} value={localToken} onChange={onCodeChange} />
-        </div>
-        <div style={{ padding: "5px" }}>
-          <button onClick={fnSetAccessToken}>Click Me to Set Access Token</button>
-        </div>
-        <div style={{ padding: "5px" }}>
-          <button onClick={fnClearAccessToken}>Click Me to Clear Access Token</button>
-        </div>
-        <div style={{ padding: "5px" }}>
-          <button onClick={fnClearRefreshToken}>Click Me to Clear Refresh Token</button>
-        </div>
+      <div className="btn btn-group" style={{ paddingLeft: "0px" }}>
+        <button onClick={clickAccessToken} type="button" className="btn btn-info">Gen. Access Token</button>
+        <button onClick={clickRefresh} type="button" className="btn btn-info">Gen. Refresh Token</button>
+        <button onClick={clickAccessApplication} type="button" className="btn btn-success">Access Application</button>
+        <button onClick={fnClearAccessToken} type="button" className="btn btn-warning">Clear Access</button>
+        <button onClick={fnClearRefreshToken} type="button" className="btn btn-warning">Clear Refresh</button>
+        <button onClick={fnSetAccessToken} type="button" className="btn btn-info">Set Local as Access</button>
       </div>
       <hr style={{ float: "left", width: "1000px" }} />
-      <div className="boxOuter" style={{ width: "1000px", float: "left", margin: "0px 0px 30px 0px" }}>
-        <div style={{ fontSize: "18px", fontWeight: "bold" }}>Result</div>
-        <div style={{ width: "500px", wordWrap: "break-word" }}>{result}</div>
+      <div className="card" style={{ width: "1000px" }}>
+        <div className="card-body">
+          <h5 className="card-title">Result</h5>
+          <p className="card-text">{result}</p>
+        </div>
       </div>
     </div>
   );

@@ -25,13 +25,7 @@ namespace my_new_app.Services
         public UserLoginResponse Authenticate(UserLoginRequest model, string ipAddress)
         {
             if (model.Username != "admin" || model.Password != "admin") { return null; }
-
-            var user = GetUser();
-            var jwtToken = TokenHelper.GenerateJwtToken(user, _appSettings.Secret, _appSettings.Issuer);
-            var refreshToken = TokenHelper.GenerateRefreshToken(ipAddress, user.Id);
-            cacheHelper.SetItem(refreshToken.Token, refreshToken);
-
-            return new UserLoginResponse(user, jwtToken, refreshToken.Token);
+            return GenerateUserTokens(ipAddress);
         }
         public UserLoginResponse RefreshToken(string token, string ipAddress)
         {
@@ -40,15 +34,17 @@ namespace my_new_app.Services
             if (!tokenModel.IsActive) { Console.WriteLine("Token Got Expired"); return null; }
 
             this.cacheHelper.RemoveItem(token);
-            var newToken = TokenHelper.GenerateRefreshToken(ipAddress, tokenModel.UserId);
-            //newToken.Revoked = DateTime.UtcNow;
-            newToken.RevokedByIp = ipAddress;
-            newToken.ReplacedByToken = token;
-            this.cacheHelper.SetItem(newToken.Token, newToken);
-
+            return GenerateUserTokens(ipAddress);
+        }
+        private UserLoginResponse GenerateUserTokens(string ipAddress)
+        {
             var user = GetUser();
             var jwtToken = TokenHelper.GenerateJwtToken(user, _appSettings.Secret, _appSettings.Issuer);
-            return new UserLoginResponse(user, jwtToken, newToken.Token);
+            //var jwtToken = TokenHelper.GenerateJwtToken(user, _appSettings.Issuer);
+            var refreshToken = TokenHelper.GenerateRefreshToken(ipAddress, user.Id);
+            cacheHelper.SetItem(refreshToken.Token, refreshToken);
+
+            return new UserLoginResponse(user, jwtToken, refreshToken.Token);
         }
 
         public bool RevokeToken(string token, string ipAddress)

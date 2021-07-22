@@ -11,7 +11,7 @@ using my_new_app.Services;
 
 namespace my_new_app.Controllers
 {
-    
+
     [ApiController]
     [Route("[controller]")]
     public class HomeController : ControllerBase
@@ -28,6 +28,7 @@ namespace my_new_app.Controllers
             _logger = logger;
             this.userService = userService;
         }
+
         [Authorize]
         [HttpGet]
         public IEnumerable<WeatherForecast> Get()
@@ -70,6 +71,19 @@ namespace my_new_app.Controllers
             return Ok(response);
         }
 
+        [AllowAnonymous]
+        [HttpGet("refresh-token-get")]
+        public IActionResult RefreshTokenByGet()
+        {
+            Console.WriteLine("RefreshToken");
+            var refreshToken = Request.Cookies["refreshToken"];
+            var response = userService.RefreshToken(refreshToken, ipAddress());
+
+            if (response == null) { return Unauthorized(new { message = "Invalid token" }); }
+
+            setTokenCookie(response.RefreshToken);
+            return Ok(response);
+        }
 
         [AllowAnonymous]
         [HttpPost("revoke-token")]
@@ -86,8 +100,17 @@ namespace my_new_app.Controllers
 
         private void setTokenCookie(string token)
         {
-            var cookieOptions = new CookieOptions { HttpOnly = true, Expires = DateTime.UtcNow.AddDays(7) };
+            //setCSRFTokenCookie(token);
+            //var cookieOptions = new CookieOptions { HttpOnly = true, Expires = DateTime.UtcNow.AddDays(7), SameSite = SameSiteMode.None, Secure = true };
+            //var cookieOptions = new CookieOptions { HttpOnly = true, Expires = DateTime.UtcNow.AddDays(7), SameSite = SameSiteMode.Lax, Secure = true };
+            var cookieOptions = new CookieOptions { HttpOnly = true, Expires = DateTime.UtcNow.AddDays(7), SameSite = SameSiteMode.Strict, Secure = true };
             Response.Cookies.Append("refreshToken", token, cookieOptions);
+        }
+
+        private void setCSRFTokenCookie(string token)
+        {
+            var cookieOptions = new CookieOptions { HttpOnly = false, Expires = DateTime.UtcNow.AddDays(7)};
+            Response.Cookies.Append("CSRFToken", token, cookieOptions);
         }
 
         private string ipAddress()
