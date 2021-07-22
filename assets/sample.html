@@ -1,0 +1,54 @@
+<html>
+
+<head>
+    <title></title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/fontawesome.min.css"
+        integrity="sha384-wESLQ85D6gbsF459vf1CiZ2+rr+CsxRY0RpiF1tLlQpDnAgg6rwdsUF1+Ics2bni" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
+    <script type="text/javascript">
+        $(function () {
+            $("button").click(function () {
+                $.ajax({
+                    url: "https://localhost:4001/Home",
+                    success: function (result) { $("#div1").html(JSON.stringify(result)); },
+                    error: function () { $("#div1").html("Error Occured."); },
+                    headers: { "authorization": "Bearer " + $("#txtbox").val() }
+                });
+            });
+        });
+    </script>
+</head>
+
+<body>
+    <div class="row" style="padding:20px;">
+        <div class="col-10">
+            <div class="input-group mb-3">
+                <input type="text" id="txtbox" name="txtbox" class="form-control" placeholder="Enter access token"
+                    aria-label="Recipient's username" aria-describedby="basic-addon2">
+                <div class="input-group-append">
+                    <button id="btnClickMe" class="btn btn-outline-secondary" type="button">Submit</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-10">
+            <div id="div1" style="width:100%; height:200px;background-color: beige;overflow-wrap: break-word; "></div>
+        </div>
+        
+        <div class="col-5">
+            <a href="https://localhost:4001/Home/refresh-token-get">Click Me</a>
+        </div>
+        <div class="col-5">
+            <iframe src="IFrame_Link.html"></iframe>
+        </div>
+        <div class="col-5">
+            <iframe src="IFrame.html"></iframe>
+        </div>
+        <div class="col-5">
+            <iframe src="https://localhost:4001/Home/refresh-token-get"></iframe>
+        </div>
+    </div>
+</body>
+
+</html>
